@@ -3,11 +3,6 @@ import streamlit as st
 
 # Function to filter data
 def filter_data(input_file, merchant_ids, item_ids, account_no_filters, settlement_date_filters, trx_date_filters, output_file):
-    """
-    Filters the input file based on Merchant IDs, Item IDs, Account No, Settlement Date, and Trx Date.
-    Supports comma-separated filtering for all fields.
-    Writes the filtered result to an output file.
-    """
     try:
         # อ่านไฟล์
         df = pd.read_csv(
@@ -35,7 +30,6 @@ def filter_data(input_file, merchant_ids, item_ids, account_no_filters, settleme
         # ตรวจสอบจำนวนคอลัมน์
         if len(df.columns) != len(expected_columns):
             st.error("The file does not match the expected format.")
-            print("Detected columns:", df.columns)
             return pd.DataFrame()
 
         # ตั้งชื่อคอลัมน์
@@ -44,19 +38,24 @@ def filter_data(input_file, merchant_ids, item_ids, account_no_filters, settleme
         # ลบช่องว่างในค่าข้อมูล
         df = df.applymap(lambda x: x.strip() if isinstance(x, str) else x)
 
-        # แปลง comma-separated filters เป็นลิสต์
-        account_no_filters = [x.strip() for x in account_no_filters.split(",") if x.strip()]
-        settlement_date_filters = [x.strip() for x in settlement_date_filters.split(",") if x.strip()]
-        trx_date_filters = [x.strip() for x in trx_date_filters.split(",") if x.strip()]
+        # แปลง comma-separated filters เป็นลิสต์ (กรณีที่ว่างเปล่าให้เป็น None)
+        account_no_filters = [x.strip() for x in account_no_filters.split(",") if x.strip()] if account_no_filters else None
+        settlement_date_filters = [x.strip() for x in settlement_date_filters.split(",") if x.strip()] if settlement_date_filters else None
+        trx_date_filters = [x.strip() for x in trx_date_filters.split(",") if x.strip()] if trx_date_filters else None
 
-        # กรองข้อมูลตามเงื่อนไข
+        # เริ่มต้นการกรอง
         filtered_df = df[
             (df["Merchant ID"].isin(merchant_ids)) &
-            (df["Item ID"].isin(item_ids)) &
-            (df["Account No"].isin(account_no_filters)) &
-            (df["Settlement Date"].isin(settlement_date_filters)) &
-            (df["Trx Date"].isin(trx_date_filters))
+            (df["Item ID"].isin(item_ids))
         ]
+
+        # ฟิลเตอร์เพิ่มเติมเฉพาะช่องที่มีค่ากำหนดไว้
+        if account_no_filters:
+            filtered_df = filtered_df[filtered_df["Account No"].isin(account_no_filters)]
+        if settlement_date_filters:
+            filtered_df = filtered_df[filtered_df["Settlement Date"].isin(settlement_date_filters)]
+        if trx_date_filters:
+            filtered_df = filtered_df[filtered_df["Trx Date"].isin(trx_date_filters)]
 
         # บันทึกข้อมูลที่กรองแล้ว
         filtered_df.to_csv(output_file, index=False, sep="|")
@@ -64,8 +63,8 @@ def filter_data(input_file, merchant_ids, item_ids, account_no_filters, settleme
 
     except Exception as e:
         st.error(f"Error processing the file: {e}")
-        print(f"Error details: {e}")
         return pd.DataFrame()
+
 
 
 
