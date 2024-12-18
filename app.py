@@ -9,7 +9,8 @@ def filter_data(input_file, merchant_ids, item_ids, account_no_filters, settleme
             input_file,
             delimiter="|",
             dtype=str,  # บังคับให้อ่านทุกคอลัมน์เป็น string
-            engine="python"
+            engine="python",
+            skiprows = 1
         )
 
         # ลบช่องว่างรอบชื่อคอลัมน์
