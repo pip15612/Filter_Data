@@ -7,23 +7,33 @@ def filter_data(df, merchant_ids, item_ids, account_no_filters, settlement_date_
         # ทำความสะอาดข้อมูล
         df = df.applymap(lambda x: x.strip() if isinstance(x, str) else x)
 
-        # แปลงคอลัมน์ให้เป็น string และลบช่องว่าง
-        df["Merchant ID"] = df["Merchant ID"].str.strip()
-        df["Item ID"] = df["Item ID"].str.strip()
+        # เริ่มต้นจากข้อมูลต้นฉบับ
+        filtered_df = df.copy()
 
-        # แปลงตัวกรองให้เป็น string และลบช่องว่าง
-        merchant_ids = [x.strip() for x in merchant_ids]
-        item_ids = [x.strip() for x in item_ids]
+        # กรอง Merchant ID
+        if merchant_ids:
+            merchant_ids = [x.strip() for x in merchant_ids]
+            filtered_df = filtered_df[filtered_df["Merchant ID"].isin(merchant_ids)]
 
-        # Debug ตัวกรอง
-        st.write("Filtered Merchant IDs:", merchant_ids)
-        st.write("Filtered Item IDs:", item_ids)
+        # กรอง Item ID
+        if item_ids:
+            item_ids = [x.strip() for x in item_ids]
+            filtered_df = filtered_df[filtered_df["Item ID"].isin(item_ids)]
 
-        # เริ่มต้นการกรอง
-        filtered_df = df[
-            (df["Merchant ID"].isin(merchant_ids)) &
-            (df["Item ID"].isin(item_ids))
-        ]
+        # กรอง Account No
+        if account_no_filters:
+            account_no_filters = [x.strip() for x in account_no_filters.split(",") if x.strip()]
+            filtered_df = filtered_df[filtered_df["Account No"].isin(account_no_filters)]
+
+        # กรอง Settlement Date
+        if settlement_date_filters:
+            settlement_date_filters = [x.strip() for x in settlement_date_filters.split(",") if x.strip()]
+            filtered_df = filtered_df[filtered_df["Settlement Date"].isin(settlement_date_filters)]
+
+        # กรอง Trx Date
+        if trx_date_filters:
+            trx_date_filters = [x.strip() for x in trx_date_filters.split(",") if x.strip()]
+            filtered_df = filtered_df[filtered_df["Trx Date"].isin(trx_date_filters)]
 
         return filtered_df
 
