@@ -75,6 +75,22 @@ st.write("Upload your transaction file and filter it by Merchant IDs, Item IDs, 
 # Upload file
 uploaded_file = st.file_uploader("Upload your TXT file", type="txt")
 
+# Show the table of the input file
+if uploaded_file:
+    try:
+        # อ่านไฟล์และแสดงตารางข้อมูล
+        input_file_preview = pd.read_csv(
+            uploaded_file,
+            delimiter="|",
+            dtype=str,  # บังคับให้อ่านทุกคอลัมน์เป็น string
+            engine="python"
+        )
+        input_file_preview.columns = input_file_preview.columns.str.strip()  # ลบช่องว่างรอบชื่อคอลัมน์
+        st.subheader("Preview of Uploaded File")
+        st.dataframe(input_file_preview)  # แสดงตารางข้อมูลจากไฟล์อัปโหลด
+    except Exception as e:
+        st.error(f"Error reading the uploaded file: {e}")
+
 # Filters
 item_ids_input = st.text_area("Enter allowed Item IDs (comma-separated)", "7462")
 item_ids = [x.strip() for x in item_ids_input.split(",") if x.strip()]
