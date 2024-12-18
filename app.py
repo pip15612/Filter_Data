@@ -83,6 +83,7 @@ if uploaded_file:
         input_file_preview = pd.read_csv(
             uploaded_file,
             delimiter="|",
+            names=expected_columns, 
             dtype=str,  # บังคับให้อ่านทุกคอลัมน์เป็น string
             engine="python",
             skiprows = 1
