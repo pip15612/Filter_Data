@@ -4,13 +4,20 @@ import streamlit as st
 # Function to filter data
 def filter_data(df, merchant_ids, item_ids, account_no_filters, settlement_date_filters, trx_date_filters):
     try:
-        # ลบช่องว่างในค่าข้อมูล
+        # ทำความสะอาดข้อมูล
         df = df.applymap(lambda x: x.strip() if isinstance(x, str) else x)
 
-        # แปลง comma-separated filters เป็นลิสต์ (กรณีที่ว่างเปล่าให้เป็น None)
-        account_no_filters = [x.strip() for x in account_no_filters.split(",") if x.strip()] if account_no_filters else None
-        settlement_date_filters = [x.strip() for x in settlement_date_filters.split(",") if x.strip()] if settlement_date_filters else None
-        trx_date_filters = [x.strip() for x in trx_date_filters.split(",") if x.strip()] if trx_date_filters else None
+        # แปลงคอลัมน์ให้เป็น string และลบช่องว่าง
+        df["Merchant ID"] = df["Merchant ID"].str.strip()
+        df["Item ID"] = df["Item ID"].str.strip()
+
+        # แปลงตัวกรองให้เป็น string และลบช่องว่าง
+        merchant_ids = [x.strip() for x in merchant_ids]
+        item_ids = [x.strip() for x in item_ids]
+
+        # Debug ตัวกรอง
+        st.write("Filtered Merchant IDs:", merchant_ids)
+        st.write("Filtered Item IDs:", item_ids)
 
         # เริ่มต้นการกรอง
         filtered_df = df[
@@ -18,19 +25,12 @@ def filter_data(df, merchant_ids, item_ids, account_no_filters, settlement_date_
             (df["Item ID"].isin(item_ids))
         ]
 
-        # ฟิลเตอร์เพิ่มเติมเฉพาะช่องที่มีค่ากำหนดไว้
-        if account_no_filters:
-            filtered_df = filtered_df[filtered_df["Account No"].isin(account_no_filters)]
-        if settlement_date_filters:
-            filtered_df = filtered_df[filtered_df["Settlement Date"].isin(settlement_date_filters)]
-        if trx_date_filters:
-            filtered_df = filtered_df[filtered_df["Trx Date"].isin(trx_date_filters)]
-
         return filtered_df
 
     except Exception as e:
         st.error(f"Error processing the file: {e}")
         return pd.DataFrame()
+
 
 
 # Streamlit UI
