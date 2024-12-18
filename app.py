@@ -72,7 +72,12 @@ def filter_data(input_file, merchant_ids, item_ids, account_no_filters, settleme
 # Streamlit UI
 st.title("Filter Transaction Data")
 st.write("Upload your transaction file and filter it by Merchant IDs, Item IDs, Account No, Settlement Date, and Trx Date.")
-
+expected_columns = [
+            "Seq", "Merchant ID", "Merchant Name", "Terminal ID", "Account No", "Settlement Date",
+            "File Name", "Program ID", "Item ID", "Netw", "Pay Mode", "Pay Freq", "Card No",
+            "TC", "Auth Code", "Trx Time", "Trx Date", "Total Amount", "Redeem Amount",
+            "Redeem Point", "Batch No", "Trace No", "Payment Date", "Credit Amount", "Item Quantity"
+        ]
 # Upload file
 uploaded_file = st.file_uploader("Upload your TXT file", type="txt")
 
