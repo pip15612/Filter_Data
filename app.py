@@ -84,7 +84,8 @@ if uploaded_file:
             uploaded_file,
             delimiter="|",
             dtype=str,  # บังคับให้อ่านทุกคอลัมน์เป็น string
-            engine="python"
+            engine="python",
+            skiprows = 1
         )
         input_file_preview.columns = input_file_preview.columns.str.strip()  # ลบช่องว่างรอบชื่อคอลัมน์
         st.subheader("Preview of Uploaded File")
